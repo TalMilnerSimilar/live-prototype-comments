@@ -1,0 +1,15 @@
+{
+  "name": "live-prototype-comments",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Serverless comment system for live prototypes using Netlify Functions and Blobs",
+  "scripts": {
+    "dev": "netlify dev",
+    "build": "echo 'no build'"
+  },
+  "dependencies": {
+    "@netlify/blobs": "^7"
+  },
+  "keywords": ["comments", "prototype", "netlify", "serverless"],
+  "author": "Tal Milner"
+}
