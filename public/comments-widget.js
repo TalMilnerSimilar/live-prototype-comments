@@ -100,15 +100,16 @@
         const created = await response.json().catch(() => null);
         console.log('LPC: Create response OK. Created:', created);
 
-        // Optimistic update if server returned created comment
+        // Add to local data and render immediately
         if (created && created.id) {
           commentsData = [...commentsData, created];
           renderComments();
           toggleSidebar(true);
+        } else {
+          // Fallback: reload from server if no created object returned
+          await loadComments();
+          toggleSidebar(true);
         }
-
-        // Also reload from server to be safe
-        await loadComments();
       } else {
         const errText = await response.text().catch(() => '');
         console.error('LPC: Failed to create comment:', response.status, errText);
@@ -242,8 +243,8 @@
   function createReviewButton() {
     const button = document.createElement('button');
     button.id = 'lpc-review-btn';
-    button.textContent = isReviewMode ? 'Exit Review' : 'Review';
-    button.setAttribute('aria-label', isReviewMode ? 'Exit review mode' : 'Enter review mode');
+    button.textContent = isReviewMode ? 'Exit Comment Mode' : 'Comment Mode';
+    button.setAttribute('aria-label', isReviewMode ? 'Exit comment mode' : 'Enter comment mode');
     
     button.style.cssText = `
       position: fixed;
@@ -461,9 +462,9 @@
     const sidebar = document.getElementById('lpc-sidebar');
     
     if (reviewBtn) {
-      reviewBtn.textContent = isReviewMode ? 'Exit Review' : 'Review';
+      reviewBtn.textContent = isReviewMode ? 'Exit Comment Mode' : 'Comment Mode';
       reviewBtn.style.background = isReviewMode ? '#ff6b35' : '#007bff';
-      reviewBtn.setAttribute('aria-label', isReviewMode ? 'Exit review mode' : 'Enter review mode');
+      reviewBtn.setAttribute('aria-label', isReviewMode ? 'Exit comment mode' : 'Enter comment mode');
     }
     
     if (overlay) {
@@ -534,6 +535,11 @@
     // Update sidebar
     renderSidebar();
     console.log('LPC: Sidebar updated');
+    
+    // Ensure sidebar is visible if we have comments and are in review mode
+    if (parentComments.length > 0 && isReviewMode && !isSidebarOpen) {
+      toggleSidebar(true);
+    }
   }
   
   function renderSidebar() {
