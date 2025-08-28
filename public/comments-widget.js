@@ -674,7 +674,7 @@
       scheduled = true;
       requestAnimationFrame(() => {
         scheduled = false;
-        if (commentsData && commentsData.length) renderComments();
+        if (commentsData && commentsData.length && isReviewMode) renderComments();
       });
     };
     window.addEventListener('resize', schedule, { passive: true });
