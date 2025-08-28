@@ -1,192 +1,199 @@
-# Live Prototype Comments (LPC)
+# 🚀 Live Prototype Comments (LPC)
 
-A serverless comment system for live prototypes using Netlify Functions and Netlify Blobs. Add pin-style comments and threaded replies to any prototype with a single `<script>` tag.
+**Drop-in commenting system for any web project.** Add collaborative comments to prototypes, static sites, or web apps with a single script tag.
 
-## Quick Start
+## ⚡ Quick Integration (2 minutes)
 
-### Prerequisites
-- [Netlify CLI](https://docs.netlify.com/cli/get-started/) installed globally
-- Node.js 16+ 
+### 1. Copy Files
+```bash
+# Copy these 4 files to your project:
+comments-widget.js              # The widget
+netlify/functions/comments.mjs  # The API  
+package.json                    # Dependencies
+netlify.toml                    # Config
+```
 
-### Installation
+### 2. Add Script Tag
+```html
+<script defer 
+    src="./comments-widget.js" 
+    data-endpoint="/.netlify/functions/comments">
+</script>
+```
 
-1. **Install dependencies:**
-   ```bash
-   npm install
-   ```
+### 3. Deploy & Use
+```bash
+npm install
+netlify deploy --prod
 
-2. **Start the development server:**
-   ```bash
-   npm run dev
-   ```
-   This runs `netlify dev` which serves the site locally with Functions support.
+# Add ?review=1 to any URL to start commenting!
+```
 
-3. **Open the demo:**
-   Navigate to `http://localhost:8888/demo.html?review=1` in your browser.
+**That's it!** 🎉 
 
-4. **Test the comments:**
-   - Click anywhere on the page to drop a pin and add a comment
-   - Click existing pins to open the comments sidebar
-   - Try replying to comments
-   - Toggle review mode with the button in the top-right corner
+## 🎯 Demo
+**Live Demo:** [https://live-prototype-comments.netlify.app/demo.html?review=1](https://live-prototype-comments.netlify.app/demo.html?review=1)
 
-## Environment Variables
+Try it:
+1. Click anywhere to drop a comment pin
+2. Click pins to open the sidebar
+3. Reply to comments
+4. Toggle comment mode with the blue button
 
-Configure these environment variables in your Netlify site settings or `.env` file:
+## ✨ Features
 
-- **`ALLOWED_ORIGINS`** (optional): Comma-separated list of allowed origins for CORS
-  - Example: `https://project-a.netlify.app,https://project-b.netlify.app`
-  - If not set, allows all origins (development only)
+- **🎯 One Script Tag** - Drop into any HTML page
+- **📌 Smart Anchoring** - Comments stick to page elements  
+- **💬 Threaded Replies** - Full conversation support
+- **🗑️ Delete Comments** - Remove your own comments
+- **📱 SPA Support** - Works with React, Vue, Angular
+- **🎨 Review Mode** - Toggle comment visibility
+- **♿ Accessible** - Keyboard navigation & screen readers
+- **🔒 Secure** - CORS protection & input validation
 
-- **`DELETE_SECRET`** (optional): Secret key for comment moderation via DELETE API
-  - Used for: `DELETE /.netlify/functions/comments?key=<blobKey>&secret=<DELETE_SECRET>`
+## 📁 Project Structure
 
-## Deployment
+```
+your-project/
+├── comments-widget.js          # Copy this → Main widget
+├── netlify/functions/
+│   └── comments.mjs           # Copy this → API function
+├── package.json               # Copy this → Dependencies  
+├── netlify.toml              # Copy this → Netlify config
+└── your-page.html             # Add one script tag
+```
 
-1. **Deploy to Netlify:**
-   - Connect your Git repository to Netlify
-   - Set build command: `npm run build` 
-   - Set publish directory: `public`
-   - Add environment variables in site settings
+**Core Files (copy these):**
+- `comments-widget.js` - The complete commenting widget
+- `netlify/functions/comments.mjs` - Serverless API function
+- `package.json` - Required dependencies  
+- `netlify.toml` - Netlify configuration
 
-2. **Test deployed version:**
-   Visit `https://your-site.netlify.app/demo.html?review=1`
+**Demo Files (optional):**
+- `demo/index.html` - Example implementation
+- `integration-example.html` - Minimal integration example
 
-## API Documentation
+## 🔧 Integration Examples
 
-### Base URL
-`/.netlify/functions/comments`
+### HTML Page
+```html
+<!DOCTYPE html>
+<html>
+<body>
+    <h1 data-annotate-id="title">My Page</h1>
+    
+    <!-- Add this one line -->
+    <script defer src="./comments-widget.js" data-endpoint="/.netlify/functions/comments"></script>
+</body>
+</html>
+```
+
+### React
+```jsx
+useEffect(() => {
+    const script = document.createElement('script');
+    script.src = './comments-widget.js';
+    script.setAttribute('data-endpoint', '/.netlify/functions/comments');
+    document.body.appendChild(script);
+}, []);
+```
+
+### Vue
+```vue
+<script>
+mounted() {
+    const script = document.createElement('script');
+    script.src = './comments-widget.js';
+    script.setAttribute('data-endpoint', '/.netlify/functions/comments');
+    document.body.appendChild(script);
+}
+</script>
+```
+
+## 🎨 Customization
+
+### Anchor Comments to Elements
+```html
+<header data-annotate-id="site-header">Header</header>
+<section data-annotate-id="hero">Hero Section</section>
+```
+
+### Environment Variables (Optional)
+```bash
+ALLOWED_ORIGINS=https://mysite.com,https://preview.mysite.com
+DELETE_SECRET=your-admin-secret
+```
+
+### Custom Styling
+Override these CSS classes:
+```css
+.lpc-pin { /* Comment pins */ }
+.lpc-sidebar { /* Comments sidebar */ }
+.lpc-comment { /* Individual comments */ }
+```
+
+## 🚀 Development
+
+```bash
+# Clone repository
+git clone <this-repo>
+
+# Install dependencies  
+npm install
+
+# Start local development
+npm run dev
+
+# Visit demo
+open http://localhost:8888/demo.html?review=1
+```
+
+## 📖 Detailed Integration Guide
+
+**For complete integration examples and troubleshooting, see:** [INTEGRATION.md](./INTEGRATION.md)
+
+## 🌟 Why LPC?
+
+- **Zero Backend** - Uses Netlify Functions + Blobs
+- **Framework Agnostic** - Works with any web technology
+- **Production Ready** - Built for real prototype collaboration
+- **Easy Integration** - One script tag, works everywhere
+- **Open Source** - MIT license, customize as needed
+
+## 🔧 API Reference
 
 ### Endpoints
 
-**GET** - List comments by page
+**GET** - List comments
 ```
-GET /.netlify/functions/comments?pageUrl=<url-or-thread>
-Response: Comment[] (200)
+GET /.netlify/functions/comments?pageUrl=<url>
 ```
 
 **POST** - Create comment
-```
-POST /.netlify/functions/comments
-Content-Type: application/json
-
+```json
 {
-  "pageUrl": "https://site.netlify.app/products",
+  "pageUrl": "https://site.com/page",
   "author": "John Doe",
   "text": "Great design!",
   "anchor": { 
-    "selector": "[data-annotate-id=\"hero\"]", 
+    "selector": "[data-annotate-id='hero']", 
     "xy": { "xPct": 50, "yPct": 25 } 
   },
   "parentId": null
 }
-
-Response: Comment (201)
 ```
 
-**DELETE** - Delete comment (moderation)
+**DELETE** - Delete comment
 ```
-DELETE /.netlify/functions/comments?key=<blobKey>&secret=<DELETE_SECRET>
-Response: 204
+DELETE /.netlify/functions/comments?commentId=abc123&author=John&pageUrl=<url>
 ```
 
-### Comment Schema
-```typescript
-type Comment = {
-  id: string;               // UUID
-  pageUrl: string;          // Normalized origin + pathname
-  author: string;           // Display name (max 200 chars)
-  text: string;             // Comment text (max 4000 chars)
-  parentId?: string | null; // For replies
-  createdAt: string;        // ISO timestamp
-  anchor: {
-    selector?: string;      // CSS selector for stable anchoring
-    xy?: { xPct: number; yPct: number }; // Percentage coordinates
-  };
-};
-```
+## 📱 Browser Support
+
+- Chrome 60+, Firefox 60+, Safari 12+, Edge 79+
+- Mobile browsers supported
+- IE11+ with polyfills
 
 ---
 
-## Embedding in Other Projects
-
-### 1. Add Anchor Attributes (Optional)
-
-For stable comment positioning, add `data-annotate-id` attributes to important elements:
-
-```html
-<section data-annotate-id="hero">
-  <h1 data-annotate-id="hero-title">Welcome</h1>
-  <button data-annotate-id="cta-buy">Buy Now</button>
-</section>
-```
-
-### 2. Include the Widget Script
-
-Add this script tag near the end of your `<body>`:
-
-```html
-<script defer 
-  src="https://YOUR-COMMENTS-SERVICE.netlify.app/comments-widget.js" 
-  data-endpoint="https://YOUR-COMMENTS-SERVICE.netlify.app/.netlify/functions/comments">
-</script>
-```
-
-**Custom Thread ID (Optional):**
-To aggregate comments across multiple pages, specify a fixed thread:
-
-```html
-<script defer 
-  src="https://YOUR-COMMENTS-SERVICE.netlify.app/comments-widget.js" 
-  data-endpoint="https://YOUR-COMMENTS-SERVICE.netlify.app/.netlify/functions/comments"
-  data-thread="checkout-flow-v2">
-</script>
-```
-
-### 3. Use Review Mode
-
-- **Enable:** Add `?review=1` to any page URL
-- **Click to comment:** Click anywhere to drop a pin and add a comment  
-- **View & reply:** Click existing pins to open sidebar and reply to comments
-- **Toggle:** Use the "Review" button in the top-right corner
-
-### 4. Production Setup
-
-1. **Configure CORS:** Set `ALLOWED_ORIGINS` environment variable to your prototype domains
-2. **Moderation:** Set `DELETE_SECRET` for comment removal capabilities
-3. **Performance:** Comments are cached and load efficiently even with many pins
-
-## Features
-
-✅ **Pin-style comments** - Click anywhere to add contextual feedback  
-✅ **Threaded replies** - Full conversation support  
-✅ **Stable anchoring** - Comments stick to elements via `data-annotate-id`  
-✅ **Review mode toggle** - Enable/disable via URL parameter  
-✅ **SPA support** - Automatically reloads comments on route changes  
-✅ **Accessibility** - Keyboard navigation and ARIA labels  
-✅ **No backend setup** - Uses Netlify Functions + Blobs  
-✅ **CORS protection** - Configurable origin allowlist  
-✅ **Lightweight** - ~15-25KB minified widget  
-
-## Browser Support
-
-- Chrome 60+
-- Firefox 60+  
-- Safari 12+
-- Edge 79+
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test locally with `npm run dev`
-5. Submit a pull request
-
-## License
-
-MIT License - see LICENSE file for details.
-
----
-
-**Built with ❤️ for better design collaboration**
+**Ready to add comments to your project?** Copy the 4 core files and add one script tag! ⚡

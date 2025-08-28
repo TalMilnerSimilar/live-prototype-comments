@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comments Integration Example</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .highlight {
+            background: #e7f3ff;
+            border-left: 4px solid #007bff;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Consolas', monospace;
+        }
+        .code-block {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 20px;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 data-annotate-id="main-title">🚀 How to Add Comments to Your Project</h1>
+        
+        <div class="highlight">
+            <h3>✨ Simple Integration</h3>
+            <p>Add <code>?review=1</code> to the URL to test the commenting system!</p>
+        </div>
+
+        <h2 data-annotate-id="step-1">Step 1: Copy the Widget</h2>
+        <p>Copy <code>comments-widget.js</code> to your project directory.</p>
+
+        <h2 data-annotate-id="step-2">Step 2: Add the Script Tag</h2>
+        <p>Add this single script tag to your HTML page:</p>
+        
+        <div class="code-block">
+            <pre><code>&lt;script defer 
+    src="./comments-widget.js" 
+    data-endpoint="https://your-netlify-site.netlify.app/.netlify/functions/comments"&gt;
+&lt;/script&gt;</code></pre>
+        </div>
+
+        <h2 data-annotate-id="step-3">Step 3: Deploy the API</h2>
+        <p>Deploy the Netlify function to your own Netlify account:</p>
+        <ul>
+            <li>Copy <code>netlify/functions/comments.mjs</code></li>
+            <li>Copy <code>package.json</code> and <code>netlify.toml</code></li>
+            <li>Deploy to Netlify</li>
+        </ul>
+
+        <h2 data-annotate-id="features">Features</h2>
+        <div data-annotate-id="feature-list">
+            <p>✅ <strong>Pin Comments:</strong> Click anywhere to add comments</p>
+            <p>✅ <strong>Threaded Replies:</strong> Reply to any comment</p>
+            <p>✅ <strong>Delete Comments:</strong> Remove your own comments</p>
+            <p>✅ <strong>Anchor to Elements:</strong> Comments stick to page elements</p>
+            <p>✅ <strong>Review Mode:</strong> Toggle comment visibility</p>
+            <p>✅ <strong>SPA Support:</strong> Works with single-page applications</p>
+        </div>
+
+        <div class="highlight">
+            <h3>🎯 Try It Now!</h3>
+            <p>This page has the commenting system enabled. Add <code>?review=1</code> to the URL and start commenting!</p>
+        </div>
+    </div>
+
+    <!-- Include the comments widget - THIS IS ALL YOU NEED! -->
+    <script defer 
+        src="./comments-widget.js" 
+        data-endpoint="/.netlify/functions/comments">
+    </script>
+</body>
+</html>
