@@ -589,22 +589,26 @@
     
     // Add close button event
     const closeBtn = document.getElementById('lpc-close-sidebar');
-    if (closeBtn) {
+    if (closeBtn && !closeBtn.hasAttribute('data-event-attached')) {
+      closeBtn.setAttribute('data-event-attached', 'true');
       closeBtn.addEventListener('click', toggleSidebar);
     }
     
-    // Add reply button events
-    sidebar.querySelectorAll('.lpc-reply-btn').forEach(btn => {
-
-    // Add delete button events
-    sidebar.querySelectorAll('.lpc-delete-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const commentId = e.target.getAttribute('data-comment-id');
-        const author = e.target.getAttribute('data-author');
-        deleteComment(commentId, author);
+    // Use event delegation to avoid duplicate listeners
+    const sidebarContent = document.getElementById('lpc-sidebar-content');
+    if (sidebarContent && !sidebarContent.hasAttribute('data-events-attached')) {
+      sidebarContent.setAttribute('data-events-attached', 'true');
+      
+      sidebarContent.addEventListener('click', (e) => {
+        if (e.target.classList.contains('lpc-reply-btn')) {
+          handleReply(e);
+        } else if (e.target.classList.contains('lpc-delete-btn')) {
+          const commentId = e.target.getAttribute('data-comment-id');
+          const author = e.target.getAttribute('data-author');
+          deleteComment(commentId, author);
+        }
       });
-    });      btn.addEventListener('click', handleReply);
-    });
+    }
 
     // Hover sync: sidebar item -> pin
     const list = document.getElementById('lpc-sidebar-content');
