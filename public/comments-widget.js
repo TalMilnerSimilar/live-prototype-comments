@@ -270,25 +270,58 @@
   function createReviewButton() {
     const button = document.createElement('button');
     button.id = 'lpc-review-btn';
-    button.textContent = isReviewMode ? 'Exit Comment Mode' : 'Comment Mode';
     button.setAttribute('aria-label', isReviewMode ? 'Exit comment mode' : 'Enter comment mode');
     
-    button.style.cssText = `
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      padding: 8px 16px;
-      background: ${isReviewMode ? '#ff6b35' : '#007bff'};
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      z-index: 10002;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      font-size: 14px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-      transition: background-color 0.2s;
-    `;
+    if (isReviewMode) {
+      // Exit mode - keep original styling
+      button.textContent = 'Exit Comment Mode';
+      button.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 8px 16px;
+        background: #ff6b35;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        z-index: 10002;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        font-size: 14px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        transition: background-color 0.2s;
+      `;
+    } else {
+      // Comment mode - new Figma design
+      button.innerHTML = `
+        <svg width="16" height="16" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-right: 4px;">
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M0 13.3244L0.826149 9.62335L7.89722 2.55228L10.7256 5.38071L3.65458 12.4518L0 13.3244ZM3.65458 10.5662L2.71177 9.62335L7.89722 4.4379L8.84003 5.38071L3.65458 10.5662Z" fill="white"/>
+          <path d="M11.197 0.195262C10.9367 -0.0650875 10.5146 -0.0650872 10.2542 0.195262L8.84003 1.60948L11.6685 4.4379L13.0827 3.02369C13.343 2.76334 13.343 2.34123 13.0827 2.08088L11.197 0.195262Z" fill="white"/>
+        </svg>
+        Comment Mode
+      `;
+      button.style.cssText = `
+        position: fixed;
+        top: 50%;
+        right: 0;
+        transform: translateY(-50%);
+        padding: 8px;
+        background: #195afe;
+        color: white;
+        border: none;
+        border-radius: 18px 0 0 18px;
+        cursor: pointer;
+        z-index: 10002;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        font-size: 14px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        transition: background-color 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+      `;
+    }
     
     button.addEventListener('click', toggleReviewMode);
     
@@ -489,9 +522,10 @@
     const sidebar = document.getElementById('lpc-sidebar');
     
     if (reviewBtn) {
-      reviewBtn.textContent = isReviewMode ? 'Exit Comment Mode' : 'Comment Mode';
-      reviewBtn.style.background = isReviewMode ? '#ff6b35' : '#007bff';
-      reviewBtn.setAttribute('aria-label', isReviewMode ? 'Exit comment mode' : 'Enter comment mode');
+      // Remove old button and create new one with correct styling
+      reviewBtn.remove();
+      const newBtn = createReviewButton();
+      document.body.appendChild(newBtn);
     }
     
     if (overlay) {
