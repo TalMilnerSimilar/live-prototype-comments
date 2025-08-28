@@ -1,0 +1,113 @@
+    // DELETE - Delete comment (user deletion or moderation)
+    if (request.method === 'DELETE') {
+      const key = url.searchParams.get('key');
+      const secret = url.searchParams.get('secret');
+      const commentId = url.searchParams.get('commentId');
+      const author = url.searchParams.get('author');
+      const deleteSecret = process.env.DELETE_SECRET;
+      
+      // Two deletion modes: admin with secret, or user with author verification
+      if (secret && deleteSecret) {
+        // Admin deletion with secret
+        if (!key || secret !== deleteSecret) {
+          return new Response(JSON.stringify({ error: 'Invalid secret or key' }), {
+            status: 403,
+            headers: {
+              'Content-Type': 'application/json',
+              ...corsHeaders
+            }
+          });
+        }
+        
+        try {
+          await store.delete(key);
+          return new Response(null, {
+            status: 204,
+            headers: corsHeaders
+          });
+        } catch (error) {
+          console.error('Error deleting comment:', error);
+          return new Response(JSON.stringify({ error: 'Failed to delete comment' }), {
+            status: 500,
+            headers: {
+              'Content-Type': 'application/json',
+              ...corsHeaders
+            }
+          });
+        }
+      } else if (commentId && author) {
+        // User deletion with author verification
+        try {
+          // Find and verify the comment
+          const normalizedPageUrl = normalizePageUrl(url.searchParams.get('pageUrl') || '');
+          const safeBlobKey = `${toSafeKeyPrefix(normalizedPageUrl)}${commentId}.json`;
+          const rawBlobKey = `${normalizedPageUrl}/${commentId}.json`;
+          
+          let comment = null;
+          let keyToDelete = null;
+          
+          // Try both key formats
+          try {
+            comment = await store.get(safeBlobKey, { type: 'json' });
+            keyToDelete = safeBlobKey;
+          } catch {
+            try {
+              comment = await store.get(rawBlobKey, { type: 'json' });
+              keyToDelete = rawBlobKey;
+            } catch {
+              return new Response(JSON.stringify({ error: 'Comment not found' }), {
+                status: 404,
+                headers: {
+                  'Content-Type': 'application/json',
+                  ...corsHeaders
+                }
+              });
+            }
+          }
+          
+          // Verify author matches
+          if (!comment || comment.author !== author) {
+            return new Response(JSON.stringify({ error: 'Unauthorized: Can only delete your own comments' }), {
+              status: 403,
+              headers: {
+                'Content-Type': 'application/json',
+                ...corsHeaders
+              }
+            });
+          }
+          
+          // Delete the comment
+          await store.delete(keyToDelete);
+          
+          // Also try to delete from the other key format for cleanup
+          if (keyToDelete === safeBlobKey) {
+            try { await store.delete(rawBlobKey); } catch {}
+          } else {
+            try { await store.delete(safeBlobKey); } catch {}
+          }
+          
+          return new Response(null, {
+            status: 204,
+            headers: corsHeaders
+          });
+          
+        } catch (error) {
+          console.error('Error deleting comment:', error);
+          return new Response(JSON.stringify({ error: 'Failed to delete comment' }), {
+            status: 500,
+            headers: {
+              'Content-Type': 'application/json',
+              ...corsHeaders
+            }
+          });
+        }
+      } else {
+        return new Response(JSON.stringify({ error: 'Either (key + secret) or (commentId + author + pageUrl) required' }), {
+          status: 400,
+          headers: {
+            'Content-Type': 'application/json',
+            ...corsHeaders
+          }
+        });
+      }
+    }

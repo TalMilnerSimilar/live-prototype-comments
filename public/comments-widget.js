@@ -74,6 +74,33 @@
     }
   }
   
+  // Delete comment function
+  async function deleteComment(commentId, author) {
+    if (!endpoint) return;
+    
+    const confirmed = confirm(`Delete this comment?\n\n"${author}": ${commentId}`);
+    if (!confirmed) return;
+    
+    try {
+      const response = await fetch(`${endpoint}?commentId=${encodeURIComponent(commentId)}&author=${encodeURIComponent(author)}&pageUrl=${encodeURIComponent(threadKey)}`, {
+        method: 'DELETE'
+      });
+      
+      if (response.ok) {
+        // Remove from local data
+        commentsData = commentsData.filter(c => c.id !== commentId);
+        renderComments();
+        console.log('LPC: Comment deleted successfully');
+      } else {
+        const errText = await response.text().catch(() => '');
+        console.error('LPC: Failed to delete comment:', response.status, errText);
+        alert('Failed to delete comment. You can only delete your own comments.');
+      }
+    } catch (error) {
+      console.error('LPC: Error deleting comment:', error);
+      alert('Failed to delete comment. Please try again.');
+    }
+  }
   async function createComment(text, anchor, parentId = null) {
     if (!endpoint) return;
     
@@ -568,7 +595,15 @@
     
     // Add reply button events
     sidebar.querySelectorAll('.lpc-reply-btn').forEach(btn => {
-      btn.addEventListener('click', handleReply);
+
+    // Add delete button events
+    sidebar.querySelectorAll('.lpc-delete-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const commentId = e.target.getAttribute('data-comment-id');
+        const author = e.target.getAttribute('data-author');
+        deleteComment(commentId, author);
+      });
+    });      btn.addEventListener('click', handleReply);
     });
 
     // Hover sync: sidebar item -> pin
@@ -600,7 +635,7 @@
         <div style="font-weight: 500; color: #333; margin-bottom: 4px;">${escapeHtml(parentComment.author)}</div>
         <div style="color: #666; font-size: 12px; margin-bottom: 8px;">${formattedDate}</div>
         <div style="margin-bottom: 8px; color: #333;">${escapeHtml(parentComment.text)}</div>
-        <button class="lpc-reply-btn" data-parent-id="${parentComment.id}" style="background: #f0f0f0; border: 1px solid #ddd; padding: 4px 8px; border-radius: 3px; cursor: pointer; font-size: 12px; color: #666;">Reply</button>
+        <button class="lpc-delete-btn" data-comment-id="${parentComment.id}" data-author="${escapeHtml(parentComment.author)}" style="background: #ff4757; border: 1px solid #ff3742; color: white; padding: 4px 8px; border-radius: 3px; cursor: pointer; font-size: 12px; margin-right: 8px;">Delete</button><button class="lpc-reply-btn" data-parent-id="${parentComment.id}" style="background: #f0f0f0; border: 1px solid #ddd; padding: 4px 8px; border-radius: 3px; cursor: pointer; font-size: 12px; color: #666;">Reply</button>
         
         ${replies.length > 0 ? `
           <div style="margin-top: 12px; margin-left: 16px; border-left: 2px solid #eee; padding-left: 12px;">
@@ -608,7 +643,7 @@
               <div style="margin-bottom: 12px;">
                 <div style="font-weight: 500; color: #333; font-size: 13px;">${escapeHtml(reply.author)}</div>
                 <div style="color: #666; font-size: 11px; margin-bottom: 4px;">${new Date(reply.createdAt).toLocaleString()}</div>
-                <div style="color: #333; font-size: 13px;">${escapeHtml(reply.text)}</div>
+                <div style="color: #333; font-size: 13px; margin-bottom: 4px;">${escapeHtml(reply.text)}</div><button class="lpc-delete-btn" data-comment-id="${reply.id}" data-author="${escapeHtml(reply.author)}" style="background: #ff4757; border: 1px solid #ff3742; color: white; padding: 2px 6px; border-radius: 2px; cursor: pointer; font-size: 10px;">Delete</button>
               </div>
             `).join('')}
           </div>
