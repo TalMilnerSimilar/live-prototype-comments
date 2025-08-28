@@ -292,13 +292,12 @@
         transition: background-color 0.2s;
       `;
     } else {
-      // Comment mode - new Figma design
+      // Comment mode - new Figma design (icon only)
       button.innerHTML = `
-        <svg width="16" height="16" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-right: 4px;">
+        <svg width="16" height="16" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path fill-rule="evenodd" clip-rule="evenodd" d="M0 13.3244L0.826149 9.62335L7.89722 2.55228L10.7256 5.38071L3.65458 12.4518L0 13.3244ZM3.65458 10.5662L2.71177 9.62335L7.89722 4.4379L8.84003 5.38071L3.65458 10.5662Z" fill="white"/>
           <path d="M11.197 0.195262C10.9367 -0.0650875 10.5146 -0.0650872 10.2542 0.195262L8.84003 1.60948L11.6685 4.4379L13.0827 3.02369C13.343 2.76334 13.343 2.34123 13.0827 2.08088L11.197 0.195262Z" fill="white"/>
         </svg>
-        Comment Mode
       `;
       button.style.cssText = `
         position: fixed;
@@ -319,7 +318,6 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 4px;
       `;
     }
     
