@@ -113,7 +113,7 @@ If you use Arc browser:
 1. **Create a Boost**:
    - Press `⌘ + T` → "New Boost"
    - Choose "Code Boost"
-   - Set scope to `*` (all websites)
+   - Set scope to your target domain(s) or "*" for all sites
 
 2. **Add this JavaScript**:
    ```javascript
@@ -130,7 +130,7 @@ If you use Arc browser:
    })();
    ```
 
-3. **Result**: LPC appears automatically on every website you visit.
+3. **Result**: LPC appears automatically on matching sites.
 
 ## Method 4: Browser Extension/DevTools
 
