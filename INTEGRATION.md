@@ -1,5 +1,62 @@
 # 🚀 Live Prototype Comments - Integration Guide
 
+## Use in any project (recommended)
+
+Goal: add the Comment Mode button and full commenting to any project, with each person deploying to their own Netlify (unique domain).
+
+### Step 1 — Deploy your own service (one-time per person/account)
+- Fork this repo to your GitHub (or click “Use this template”).
+- Create a new Netlify site from that repo (UI) or from CLI:
+```bash
+npm i
+npx -y netlify-cli@17 deploy --prod --dir=demo --functions=netlify/functions
+```
+- Optional env vars in your Netlify site:
+  - `ALLOWED_ORIGINS`: comma-separated list (e.g. `http://localhost:3000,https://your-app.netlify.app`)
+  - `DELETE_SECRET`: for admin deletions
+
+You will get a site like `https://YOUR-LPC-SITE.netlify.app`.
+
+### Step 2 — Embed in any project
+Add this tag to the project’s HTML (or inject dynamically in React/Vue/Next). Replace YOUR-LPC-SITE with your site from Step 1:
+```html
+<script defer
+  src="https://YOUR-LPC-SITE.netlify.app/comments-widget.js"
+  data-endpoint="https://YOUR-LPC-SITE.netlify.app/.netlify/functions/comments">
+</script>
+```
+
+Notes:
+- Works across any domain (dev, preview, prod) as long as CORS allows it (set `ALLOWED_ORIGINS`).
+- SPA routing is auto-detected (pushState/popstate); comments reload per route.
+- For precise anchors, add `data-annotate-id` to stable containers you care about.
+- The Comment Mode icon appears on the right edge. Toggle with `?review=1` or the button.
+
+#### React (dynamic injection)
+```jsx
+useEffect(() => {
+  if (document.querySelector('script[data-endpoint*="/.netlify/functions/comments"]')) return;
+  const s = document.createElement('script');
+  s.defer = true;
+  s.src = 'https://YOUR-LPC-SITE.netlify.app/comments-widget.js';
+  s.setAttribute('data-endpoint', 'https://YOUR-LPC-SITE.netlify.app/.netlify/functions/comments');
+  document.body.appendChild(s);
+  return () => s.remove();
+}, []);
+```
+
+#### Next.js (pages/_document.js) — minimal, client-only is fine too
+```jsx
+// inside <Head> or end of <body>
+<script
+  defer
+  src="https://YOUR-LPC-SITE.netlify.app/comments-widget.js"
+  data-endpoint="https://YOUR-LPC-SITE.netlify.app/.netlify/functions/comments"
+></script>
+```
+
+Team usage: each teammate deploys their own LPC site and uses their own domain in the script tag. No code changes needed in the target projects beyond the single script include.
+
 ## Quick Start (2 minutes)
 
 ### What You Need
@@ -139,7 +196,7 @@ Point to your own API endpoint:
 ```html
 <script defer 
     src="./comments-widget.js" 
-    data-endpoint="https://api.mysite.com/comments">
+    data-endpoint="https://YOUR-LPC-SITE.netlify.app/.netlify/functions/comments">
 </script>
 ```
 
@@ -161,4 +218,4 @@ Point to your own API endpoint:
 - Page layout changes may affect positioning
 
 ## Need Help?
-Check the demo at: https://live-prototype-comments.netlify.app/demo.html?review=1
+Check the demo at: https://live-prototype-comments.netlify.app/?review=1
