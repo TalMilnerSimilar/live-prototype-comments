@@ -25,6 +25,11 @@ Paste everything below into Cursor in your target project.
 ```md
 You are the project engineer. Integrate the Live Prototype Comments (LPC) service into THIS project so it’s self-hosted on this project’s Netlify site and provides the full feature set (Comment Mode button, pins, sidebar with replies, delete, SPA route detection, anchoring to elements with data-annotate-id or robust selectors, CORS, optimistic rendering). Follow these steps exactly and keep edits minimal.
 
+Use the step-by-step instructions from `CURSOR_INSTRUCTIONS.md` in the LPC repo as the authoritative plan. Fetch and follow it verbatim.
+
+Authoritative instructions URL:
+- https://raw.githubusercontent.com/TalMilnerSimilar/live-prototype-comments/master/CURSOR_INSTRUCTIONS.md
+
 1) Create required folders (don’t duplicate if present)
 - Create `netlify/functions/`
 - Prefer a public static root for assets:
