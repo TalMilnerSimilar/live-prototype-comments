@@ -7,9 +7,11 @@ Constraints:
 - Don’t overwrite existing build/publish settings; only add what’s needed
 - Use Netlify Functions (ESM) and Netlify Blobs
 - Node >= 18
+ - CRITICAL: Pins must anchor to containers, not viewport XY. Add `data-annotate-id` to stable containers (top-level layout wrappers, sections, cards). Ensure the widget script executes after the app’s DOM is mounted/hydrated (Next.js: use `<Script strategy="afterInteractive">`; React/Vue: inject on client mount).
 
 Finish criteria:
 - Files added/edited are listed with paths
 - Where the `<script>` was inserted is stated
 - Local run command and Netlify deploy instructions included
 - Verified: button shows, hover highlight, click-to-anchor, pins, sidebar pushes content, replies, delete own comments (with confirmation), cross-highlighting pin ⇄ sidebar, SPA route reloads comments
+ - Verified on scroll/resize: pins stay attached to the selected container (not absolute XY)

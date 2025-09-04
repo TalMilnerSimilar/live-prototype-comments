@@ -7,6 +7,13 @@ These are explicit, linear steps for Cursor to perform in any target project. Ke
 - Use Netlify Functions (ESM) + Netlify Blobs
 - Do not overwrite existing build/publish settings; only add what’s needed
 
+### 0.1) Critical anchoring requirements (must-do)
+- Pins MUST anchor to containers, not viewport XY.
+- Add `data-annotate-id` to stable, persistent containers (e.g., main content wrapper, major sections, cards).
+  - Prefer short stable keys: `data-annotate-id="main"`, `"content"`, `"sidebar"`, etc.
+  - If you cannot modify many files, at least annotate the top-level page container (e.g., `<main>`/`#root`/primary layout wrapper).
+- Ensure the widget loads AFTER the app’s DOM is mounted/hydrated, so selectors resolve to real nodes.
+
 ## 1) Create required directories
 - Ensure `netlify/functions/` exists
 - Choose a static assets directory (prefer this order):
@@ -25,16 +32,44 @@ These are explicit, linear steps for Cursor to perform in any target project. Ke
 - Place it at the static directory root as `/comments-widget.js` (e.g., `public/comments-widget.js`)
 
 ## 4) Wire up the widget
-- If there is a top-level HTML file (e.g., `public/index.html`), insert before `</body>`:
+- If there is a top-level HTML file (e.g., `public/index.html`), insert before `</body>` (ensures app DOM exists):
 ```html
 <script defer
   src="/comments-widget.js"
   data-endpoint="/.netlify/functions/comments">
 </script>
 ```
-- If the framework has no single HTML (e.g., Next.js App Router), add the same `<script>` in the root layout or document:
-  - Next.js Pages: `pages/_document.(js|tsx)` inside `<Head>` or before `</body>`
-  - Next.js App: `app/layout.(js|tsx)` in the returned HTML
+- Next.js (RECOMMENDED): use Next Script so it runs after hydration
+  - Pages Router (`pages/_app.(js|tsx)`):
+    ```tsx
+    import Script from 'next/script';
+    // ...inside App component render
+    <Script
+      src="/comments-widget.js"
+      strategy="afterInteractive"
+      defer
+      data-endpoint="/.netlify/functions/comments"
+    />
+    ```
+  - App Router (`app/layout.(js|tsx)`):
+    ```tsx
+    import Script from 'next/script';
+    export default function RootLayout({ children }) {
+      return (
+        <html>
+          <body>
+            {children}
+            <Script
+              src="/comments-widget.js"
+              strategy="afterInteractive"
+              defer
+              data-endpoint="/.netlify/functions/comments"
+            />
+          </body>
+        </html>
+      );
+    }
+    ```
 - If needed, support dynamic injection for client-only mount (React/Vue):
 ```jsx
 useEffect(() => {
@@ -84,6 +119,7 @@ npm i @netlify/blobs@^7
   - Comment Mode button (right edge)
   - Hover highlight and click-to-anchor
   - Pins render; sidebar pushes content
+  - Scroll and resize: pins stay attached to the selected container (not absolute XY)
   - Replies and delete own comments (with confirmation)
   - Cross-highlighting pin ⇄ sidebar item
   - SPA route changes reload comments
